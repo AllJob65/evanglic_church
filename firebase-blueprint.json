@@ -1,0 +1,53 @@
+{
+  "entities": {
+    "users": {
+      "title": "users",
+      "description": "User profiles, roles, campus assignments, and security authentication metadata",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string" },
+        "name": { "type": "string" },
+        "role": { "type": "string", "enum": ["Super Administrator", "System Admin", "Manager", "Pastor", "Ministry Leader", "Staff Member", "Regular Member", "Financial Auditor"] },
+        "branchId": { "type": "string" },
+        "branchName": { "type": "string" },
+        "branchIds": { "type": "array", "items": { "type": "string" } },
+        "isMfaEnabled": { "type": "boolean" },
+        "status": { "type": "string", "enum": ["Active", "Inactive", "Suspended"] },
+        "security": {
+          "type": "object",
+          "properties": {
+            "lastMaxAuthAt": { "type": "string" },
+            "lastLoginAt": { "type": "string" }
+          }
+        }
+      },
+      "required": ["email", "role"]
+    },
+    "members": {
+      "title": "members",
+      "description": "Church congregation members directory",
+      "type": "object",
+      "properties": {
+        "firstName": { "type": "string" },
+        "lastName": { "type": "string" },
+        "email": { "type": "string" },
+        "primaryPhone": { "type": "string" },
+        "branchId": { "type": "string" },
+        "membershipStatus": { "type": "string" }
+      },
+      "required": ["firstName", "lastName", "primaryPhone"]
+    },
+    "audit_logs": {
+      "title": "audit_logs",
+      "description": "System access, login, and administrative action logs",
+      "type": "object",
+      "properties": {
+        "userEmail": { "type": "string" },
+        "action": { "type": "string" },
+        "module": { "type": "string" },
+        "timestamp": { "type": "string" }
+      }
+    }
+  }
+}

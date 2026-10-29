@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Church Member Management System</title>
+    <meta name="description" content="Comprehensive CMMS for managing members, families, branches, ministries, attendance, finances, events, communications, prayer & counseling, visitations, volunteers, assets, documents, LMS, and role-based access control." />
+    <meta property="og:title" content="Church Member Management System" />
+    <meta property="og:description" content="Comprehensive CMMS for managing members, families, branches, ministries, attendance, finances, events, communications, prayer & counseling, visitations, volunteers, assets, documents, LMS, and role-based access control." />
+    <script>
+      // Early theme & brand color initialization to prevent Flash of Unstyled Content (FOUC)
+      // Default is strictly LIGHT mode unless the user explicitly saved 'dark' or 'advanced-dark'.
+      (function() {
+        try {
+          var root = document.documentElement;
+          var savedTheme = localStorage.getItem('cmms-theme') || localStorage.getItem('cmms_theme_mode') || localStorage.getItem('theme');
+          root.classList.remove('light', 'dark', 'advanced-dark');
+          if (savedTheme === 'advanced-dark') {
+            root.classList.add('dark', 'advanced-dark');
+          } else if (savedTheme === 'dark') {
+            root.classList.add('dark');
+          } else {
+            root.classList.add('light');
+          }
+
+          var primaryColor = localStorage.getItem('cmms_primary_color') || '#2563eb';
+          var accentColor = localStorage.getItem('cmms_accent_color') || '#7c3aed';
+          var loginPanelColor = localStorage.getItem('cmms_login_panel_color') || '#0f172a';
+          root.style.setProperty('--cmms-primary-color', primaryColor);
+          root.style.setProperty('--cmms-accent-color', accentColor);
+          root.style.setProperty('--cmms-login-panel-color', loginPanelColor);
+          root.style.setProperty('--color-primary', primaryColor);
+          root.style.setProperty('--color-accent', accentColor);
+        } catch (e) {}
+      })();
+
+      // Early runtime error guard to suppress synthetic and unhandled browser events
+      window.addEventListener('error', function(event) {
+        if (!event.error || (typeof event.error === 'object' && !event.error.message && event.error.isTrusted)) {
+          event.preventDefault();
+          event.stopImmediatePropagation && event.stopImmediatePropagation();
+          return true;
+        }
+      }, true);
+      window.addEventListener('unhandledrejection', function(event) {
+        if (!event.reason || (typeof event.reason === 'object' && !event.reason.message && event.reason.isTrusted)) {
+          event.preventDefault();
+          event.stopImmediatePropagation && event.stopImmediatePropagation();
+        }
+      });
+      window.onerror = function(msg, url, line, col, error) {
+        if (!error || !msg || msg === 'Script error.' || (typeof error === 'object' && !error.message && error.isTrusted)) {
+          return true;
+        }
+        return false;
+      };
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Khand:wght@300;400;500;600;700&family=Menbere:wght@100..700&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Satisfy&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+

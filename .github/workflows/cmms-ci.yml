@@ -1,0 +1,151 @@
+name: CMMS CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches:
+      - main
+      - audit/phase-1-2-postgres-foundation
+      - phase1/attendance-postgres-checkin-repository
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cmms-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: TypeScript and production build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Guard against committed runtime data
+        if: github.event_name == 'pull_request'
+        run: node scripts/guard-runtime-artifacts.mjs
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm install --no-package-lock
+
+      - name: Static security architecture tests
+        run: npm run test:security
+
+      - name: TypeScript diagnostics
+        run: npm run lint
+
+      - name: Production build
+        run: npm run build
+
+  attendance-integration:
+    name: Attendance PostgreSQL integration tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: cmms_attendance_test
+          POSTGRES_USER: cmms_test
+          POSTGRES_PASSWORD: cmms_test_only
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U cmms_test -d cmms_attendance_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql://cmms_test:cmms_test_only@localhost:5432/cmms_attendance_test
+      CMMS_TEST_DATABASE: "true"
+      NODE_ENV: test
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install dependencies
+        run: npm install --no-package-lock
+      - name: Run attendance integration tests
+        run: npm run test:attendance
+
+  ministry-planning-integration:
+    name: Ministry planning PostgreSQL integration tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: cmms_ministry_test
+          POSTGRES_USER: cmms_test
+          POSTGRES_PASSWORD: cmms_test_only
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U cmms_test -d cmms_ministry_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql://cmms_test:cmms_test_only@localhost:5432/cmms_ministry_test
+      CMMS_TEST_DATABASE: "true"
+      NODE_ENV: test
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install dependencies
+        run: npm install --no-package-lock
+      - name: Run ministry planning integration tests
+        run: npm run test:ministry-planning
+
+  profile-change-migration-integration:
+    name: Profile-change migration PostgreSQL integration tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: cmms_profile_change_test
+          POSTGRES_USER: cmms_test
+          POSTGRES_PASSWORD: cmms_test_only
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U cmms_test -d cmms_profile_change_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql://cmms_test:cmms_test_only@localhost:5432/cmms_profile_change_test
+      CMMS_TEST_DATABASE: "true"
+      NODE_ENV: test
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install dependencies
+        run: npm install --no-package-lock
+      - name: Run profile-change migration integration tests
+        run: npm run test:profile-change

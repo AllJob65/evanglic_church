@@ -1,0 +1,6 @@
+{
+  "name": "Church Member Management System",
+  "description": "Comprehensive CMMS for managing members, families, branches, ministries, attendance, finances, events, communications, prayer & counseling, visitations, volunteers, assets, documents, LMS, and role-based access control.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
